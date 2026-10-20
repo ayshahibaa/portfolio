@@ -22,6 +22,8 @@
   }
 
   *{box-sizing:border-box}
+  @media (prefers-reduced-motion:no-preference){ :root{scroll-behavior:smooth} }
+  section[id]{scroll-margin-top:calc(72px + env(safe-area-inset-top, 0px))}
   body{
     background:var(--bg); color:var(--ink);
     font-family:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
@@ -56,6 +58,14 @@
   .nav-links{display:flex; gap:20px; font-size:.82rem; flex-wrap:wrap}
   .nav-links a{text-decoration:none; color:var(--ink-soft); transition:color .15s}
   .nav-links a:hover{color:var(--accent)}
+  .nav-links a{position:relative}
+  .nav-links a::after{
+    content:""; position:absolute; left:0; right:0; bottom:-5px; height:1.5px;
+    background:var(--accent); transform:scaleX(0); transform-origin:left;
+    transition:transform .3s ease;
+  }
+  .nav-links a.active{color:var(--accent)}
+  .nav-links a.active::after{transform:scaleX(1)}
   .nav-links a.resume{color:var(--ink); border-bottom:1px solid var(--ink)}
 
   /* ---------- social rail (wide screens only) ---------- */
@@ -83,9 +93,14 @@
   .btn-primary{
     background:var(--ink); color:var(--bg); font-size:.88rem; font-weight:500;
     padding:12px 22px; border-radius:3px; text-decoration:none; display:inline-block;
+    transition:transform .25s ease, opacity .25s ease;
   }
-  :root[data-theme="dark"] .btn-primary, @media (prefers-color-scheme:dark){ .btn-primary{} }
-  .btn-text{font-size:.88rem; text-decoration:none; border-bottom:1px solid var(--ink); padding-bottom:2px}
+  .btn-primary:hover{transform:translateY(-2px); opacity:.88}
+  .btn-text{
+    font-size:.88rem; text-decoration:none; border-bottom:1px solid var(--ink); padding-bottom:2px;
+    transition:border-color .2s ease, color .2s ease;
+  }
+  .btn-text:hover{border-color:var(--accent); color:var(--accent)}
 
   .portrait-wrap{position:relative; display:flex; justify-content:center}
   .arc{
@@ -109,23 +124,26 @@
   section{padding:52px 0}
   section + section{border-top:1px solid var(--line)}
   .section-head{margin-bottom:8px}
-  .section-head h2{font-size:1.7rem; font-weight:600; position:relative; display:inline-block; padding-bottom:6px}
+  .section-head h2{font-size:clamp(1.5rem, 3.4vw, 1.85rem); font-weight:600; position:relative; display:inline-block; padding-bottom:6px}
   .section-head h2::after{
     content:""; position:absolute; left:0; bottom:0; width:38px; height:3px; background:var(--accent);
   }
   .section-sub{color:var(--ink-soft); margin-top:14px; max-width:58ch}
 
   /* ---------- work ---------- */
-  .project{padding:34px 0; border-top:1px solid var(--line-soft)}
+  .project{padding:34px 0; border-top:1px solid var(--line-soft); transition:border-color .3s ease}
   .project:first-of-type{border-top:none; padding-top:30px}
   .project-label{margin-bottom:6px}
-  .project h3{font-size:1.5rem; font-weight:600; margin-bottom:10px}
+  .project h3{font-size:clamp(1.25rem, 2.6vw, 1.5rem); font-weight:600; margin-bottom:10px; transition:color .25s ease}
+  .project:hover h3{color:var(--accent)}
   .project p.desc{color:var(--ink-soft); max-width:62ch; margin-bottom:16px}
   .stack{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px}
   .stack span{
     font-family:"IBM Plex Mono", monospace; font-size:.72rem; color:var(--ink-soft);
     border:1px solid var(--line); border-radius:999px; padding:4px 11px;
+    transition:border-color .2s ease, color .2s ease;
   }
+  .stack span:hover{border-color:var(--accent); color:var(--accent)}
   .stat{display:flex; align-items:baseline; gap:10px; margin-top:4px}
   .stat b{font-family:"Fraunces", serif; font-size:1.7rem; color:var(--accent); font-variant-numeric:tabular-nums}
   .stat span{color:var(--ink-soft); font-size:.85rem; max-width:34ch}
@@ -136,6 +154,20 @@
   .project-figure figcaption{font-family:"IBM Plex Mono", monospace; font-size:.72rem; color:var(--ink-soft); margin-top:8px}
   .project-link{display:inline-block; margin-top:2px; margin-bottom:4px; font-size:.85rem; text-decoration:none; border-bottom:1px solid var(--line)}
   .project-link:hover{border-color:var(--accent); color:var(--accent)}
+
+  .demo-player{
+    position:relative; aspect-ratio:16/9; border:1px solid var(--line); border-radius:4px;
+    overflow:hidden; background:var(--bg-raised); cursor:pointer; margin:4px 0 8px;
+  }
+  .demo-poster, .demo-player video{width:100%; height:100%; object-fit:cover; display:block}
+  .demo-play{
+    position:absolute; inset:0; margin:auto; width:56px; height:56px; border-radius:50%;
+    background:var(--accent); border:none; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:transform .15s ease;
+  }
+  .demo-player:hover .demo-play{transform:scale(1.07)}
+  .demo-player.is-playing .demo-play, .demo-player.is-playing .demo-poster{display:none}
+  .demo-caption{font-family:"IBM Plex Mono", monospace; font-size:.72rem; color:var(--ink-soft); margin:0 0 18px}
 
   /* ---------- path (timeline) ---------- */
   .timeline{position:relative}
@@ -195,6 +227,25 @@
     align-items:center; flex-wrap:wrap; gap:10px;
   }
   footer .mono{font-size:.74rem; color:var(--ink-soft)}
+
+  /* ---------- scroll-driven motion ---------- */
+  @media (prefers-reduced-motion:no-preference){
+    [data-reveal]{
+      transform:translateY(22px);
+      transition:transform .7s cubic-bezier(.19,1,.22,1);
+    }
+    [data-reveal].in-view{transform:translateY(0)}
+    [data-reveal-stagger] > *{
+      transform:translateY(16px);
+      transition:transform .55s cubic-bezier(.19,1,.22,1);
+      transition-delay:calc(var(--i, 0) * 70ms);
+    }
+    [data-reveal-stagger].in-view > *{transform:translateY(0)}
+    .section-head h2::after{width:0; transition:width .7s ease .1s}
+    .section-head.in-view h2::after{width:38px}
+    .portrait{transition:transform .4s ease}
+    .portrait-wrap:hover .portrait{transform:scale(1.015)}
+  }
 </style>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -246,27 +297,27 @@
     </div>
   </div>
 
-  <div class="about">
+  <div class="about" data-reveal>
     <p>Two years building backend services at Cred.ai, now completing my M.Tech in Data Science at Manipal Academy of Higher Education. I work across Python, SQL, machine learning, forecasting, and AI-powered applications, bringing together engineering foundations, analytical thinking, and a focus on making data useful. Open to Data Science, Applied AI, and Analytics opportunities across the UAE.</p>
   </div>
 
   <section id="work">
-    <div class="section-head">
+    <div class="section-head" data-reveal>
       <h2>Work</h2>
       <p class="section-sub">Three systems in detail, then the rest of what I've built.</p>
     </div>
 
-    <div class="project">
+    <div class="project" data-reveal>
       <div class="label mono">INDEPENDENT PROJECT · RETRIEVAL-AUGMENTED GENERATION</div>
       <h3>Enterprise AI Knowledge Assistant</h3>
       <p class="desc">A retrieval system that answers questions on Dubai real estate legislation with article-level citations. Five statutory documents from the DLD and Dubai Legislation Portal are parsed, overlap-chunked and indexed, sitting behind a multi-provider LLM layer with automatic failover and retry-on-rate-limit, so generation never blocks on a single provider.</p>
-      <figure class="project-figure">
-        <video controls preload="metadata">
-          <source src="ai-assistant-demo.mp4" type="video/mp4">
-          Your browser doesn't support embedded video. <a href="ai-assistant-demo.mp4">Download the demo</a> instead.
-        </video>
-        <figcaption>Demo — asking a question and getting a cited answer</figcaption>
-      </figure>
+      <div class="demo-player" data-video="ai-assistant-demo.mp4">
+        <img class="demo-poster" src="ai-assistant-demo-poster.jpg" alt="Preview of the Dubai property law assistant answering a question">
+        <button class="demo-play" aria-label="Play demo video" type="button">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M8 5v14l11-7L8 5z" fill="white"/></svg>
+        </button>
+      </div>
+      <figcaption class="demo-caption">Demo — asking a question and getting a cited answer</figcaption>
       <div class="stack">
         <span>Python</span><span>FastAPI</span><span>ChromaDB</span><span>Sentence-Transformers</span><span>Groq</span><span>Streamlit</span>
       </div>
@@ -274,7 +325,7 @@
       <a class="project-link" href="https://github.com/ayshahibaa/ai-knowledge-assistant" target="_blank" rel="noopener">Code on GitHub ↗</a>
     </div>
 
-    <div class="project">
+    <div class="project" data-reveal>
       <div class="label mono">INDEPENDENT PROJECT · ANALYTICS PLATFORM</div>
       <h3>Healthcare Equipment Health Analytics</h3>
       <p class="desc">An equipment lifecycle and maintenance intelligence system for healthcare facilities. A normalized PostgreSQL schema and ETL pipelines ingest, validate and transform facility and equipment data; a Power BI dashboard surfaces maintenance insight and replacement planning, with a natural-language RAG and text-to-SQL layer for querying equipment data now in progress.</p>
@@ -289,7 +340,7 @@
       <a class="project-link" href="https://github.com/ayshahibaa/equipment-health" target="_blank" rel="noopener">Code on GitHub ↗</a>
     </div>
 
-    <div class="project">
+    <div class="project" data-reveal>
       <div class="label mono">INDEPENDENT PROJECT · COST INTELLIGENCE</div>
       <h3>FinOps Copilot</h3>
       <p class="desc">An assistant for exploring AWS spend in plain language. A RAG pipeline grounds every answer in real pricing data, while anomaly detection and bill prediction sit alongside the conversational layer, combining classical ML with the Gemini API for recommendations that explain themselves.</p>
@@ -300,14 +351,14 @@
       <a class="project-link" href="https://github.com/ayshahibaa/finops-copilot" target="_blank" rel="noopener">Code on GitHub ↗</a>
     </div>
 
-    <div class="project minor">
+    <div class="project minor" data-reveal>
       <div class="label mono">INDEPENDENT PROJECT · BI &amp; DECISION SUPPORT</div>
       <h3>Marketing Campaign Intelligence Dashboard</h3>
       <p class="desc">An analytics application combining SQL, Power BI and Python to analyse campaign performance, channel effectiveness and revenue outcomes, with DAX measures for ROI, ROAS, CTR and conversion, and an interactive dashboard for comparing campaigns.</p>
       <div class="stack"><span>MySQL</span><span>SQL</span><span>Power BI</span><span>DAX</span></div>
     </div>
 
-    <div class="project minor">
+    <div class="project minor" data-reveal>
       <div class="label mono">APPLIED AI &amp; DATA SCIENCE RESEARCH</div>
       <h3>Urban Carbon Emission Forecasting, Bengaluru</h3>
       <p class="desc">A hybrid Markov chain and XGBoost framework that classifies Bengaluru's wards into carbon sinks, neutral zones and emitters, and models their year-to-year transitions from multi-source satellite data, with SHAP used to explain which drivers move the predictions.</p>
@@ -316,9 +367,9 @@
   </section>
 
   <section id="path">
-    <div class="section-head"><h2>Path</h2></div>
+    <div class="section-head" data-reveal><h2>Path</h2></div>
     <div class="timeline">
-      <div class="tl-item">
+      <div class="tl-item" data-reveal>
         <div class="tl-date">Aug 2023 – Aug 2025</div>
         <div class="tl-role">
           <h3>Associate Software Developer, Backend &amp; AI</h3>
@@ -332,14 +383,14 @@
           </ul>
         </div>
       </div>
-      <div class="tl-item">
+      <div class="tl-item" data-reveal>
         <div class="tl-date">2025 – 2027</div>
         <div class="tl-role">
           <h3>M.Tech in CSE, Data Science</h3>
           <div class="tl-org">Manipal Academy of Higher Education, Bengaluru · CGPA 9.09</div>
         </div>
       </div>
-      <div class="tl-item">
+      <div class="tl-item" data-reveal>
         <div class="tl-date">B.Tech</div>
         <div class="tl-role">
           <h3>B.Tech, Computer Science &amp; Engineering</h3>
@@ -350,29 +401,29 @@
   </section>
 
   <section id="skills">
-    <div class="section-head"><h2>Skills</h2></div>
-    <div class="skills-grid">
-      <div class="skill-cat">
+    <div class="section-head" data-reveal><h2>Skills</h2></div>
+    <div class="skills-grid" data-reveal-stagger>
+      <div class="skill-cat" style="--i:0">
         <h3>Programming &amp; backend</h3>
         <ul><li>Python</li><li>SQL</li><li>Java</li><li>C</li><li>FastAPI</li><li>REST APIs</li></ul>
       </div>
-      <div class="skill-cat">
+      <div class="skill-cat" style="--i:1">
         <h3>Generative AI &amp; LLMs</h3>
         <ul><li>Gemini API</li><li>Prompt engineering</li><li>RAG</li><li>Hugging Face Transformers</li><li>Text embeddings</li><li>AI chatbots</li></ul>
       </div>
-      <div class="skill-cat">
+      <div class="skill-cat" style="--i:2">
         <h3>Machine learning</h3>
         <ul><li>Scikit-learn</li><li>TensorFlow</li><li>PyTorch</li><li>XGBoost</li><li>Classification &amp; clustering</li><li>Time-series forecasting</li></ul>
       </div>
-      <div class="skill-cat">
+      <div class="skill-cat" style="--i:3">
         <h3>Data &amp; databases</h3>
         <ul><li>ETL &amp; feature engineering</li><li>MySQL</li><li>PostgreSQL</li><li>MongoDB</li><li>DynamoDB (AWS)</li><li>Chroma</li></ul>
       </div>
-      <div class="skill-cat">
+      <div class="skill-cat" style="--i:4">
         <h3>Cloud &amp; analytics</h3>
         <ul><li>AWS Cloud Essentials</li><li>Google Earth Engine</li><li>Azure basics</li><li>Power BI</li><li>Streamlit</li><li>Matplotlib &amp; Seaborn</li></ul>
       </div>
-      <div class="skill-cat">
+      <div class="skill-cat" style="--i:5">
         <h3>Everyday tools</h3>
         <ul><li>Git &amp; GitHub</li><li>Jupyter Notebook</li><li>VS Code</li><li>Postman</li><li>Google Colab</li><li>Anaconda</li></ul>
       </div>
@@ -380,16 +431,16 @@
   </section>
 
   <section id="certificates">
-    <div class="section-head"><h2>Certificates</h2></div>
-    <div class="cert-list">
-      <div class="cert">
+    <div class="section-head" data-reveal><h2>Certificates</h2></div>
+    <div class="cert-list" data-reveal-stagger>
+      <div class="cert" style="--i:0">
         <div>
           <div class="cert-name">IBM SkillsBuild AI Practitioner</div>
           <div class="cert-org">IBM</div>
         </div>
         <div class="cert-detail">AI ethics, ML &amp; DL, LLM, NLP</div>
       </div>
-      <div class="cert">
+      <div class="cert" style="--i:1">
         <div>
           <div class="cert-name">Data Visualization with Power BI</div>
           <div class="cert-org">Microsoft, via Great Learning</div>
@@ -405,30 +456,30 @@
   </section>
 
   <section id="contact">
-    <div class="section-head">
+    <div class="section-head" data-reveal>
       <h2>Contact</h2>
       <p class="section-sub">Based in Abu Dhabi, UAE. Open to full-time Data Science and AI roles.</p>
     </div>
-    <div class="contact-grid">
-      <div class="contact-item">
+    <div class="contact-grid" data-reveal-stagger>
+      <div class="contact-item" style="--i:0">
         <div class="label">Email</div>
         <div class="copy-row">
           <span class="val mono">ayshahibaa1@gmail.com</span>
           <button class="copy-btn" data-copy="ayshahibaa1@gmail.com">COPY</button>
         </div>
       </div>
-      <div class="contact-item">
+      <div class="contact-item" style="--i:1">
         <div class="label">Phone</div>
         <div class="copy-row">
           <span class="val mono">+971 56 966 2056</span>
           <button class="copy-btn" data-copy="+971 56 966 2056">COPY</button>
         </div>
       </div>
-      <div class="contact-item">
+      <div class="contact-item" style="--i:2">
         <div class="label">LinkedIn</div>
         <a class="ext-link" href="https://www.linkedin.com/in/aysha-hiba" target="_blank" rel="noopener">linkedin.com/in/aysha-hiba</a>
       </div>
-      <div class="contact-item">
+      <div class="contact-item" style="--i:3">
         <div class="label">GitHub</div>
         <a class="ext-link" href="https://github.com/ayshahibaa" target="_blank" rel="noopener">github.com/ayshahibaa</a>
       </div>
@@ -442,6 +493,50 @@
 </div>
 
 <script>
+  // scroll-reveal: adds .in-view once, respects prefers-reduced-motion
+  (function(){
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!('IntersectionObserver' in window)) return;
+    var targets = document.querySelectorAll('[data-reveal], [data-reveal-stagger]');
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    targets.forEach(function(el){ io.observe(el); });
+  })();
+
+  // nav active-section tracking
+  (function(){
+    var sections = document.querySelectorAll('section[id]');
+    var links = document.querySelectorAll('.nav-links a[href^="#"]');
+    if (!sections.length || !('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (!entry.isIntersecting) return;
+        var id = entry.target.getAttribute('id');
+        links.forEach(function(a){
+          a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+        });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+    sections.forEach(function(s){ io.observe(s); });
+  })();
+
+  document.querySelectorAll('.demo-player').forEach(function(wrap){
+    wrap.addEventListener('click', function(){
+      if (wrap.classList.contains('is-playing')) return;
+      var video = document.createElement('video');
+      video.src = wrap.getAttribute('data-video');
+      video.controls = true; video.autoplay = true; video.playsInline = true;
+      wrap.appendChild(video);
+      wrap.classList.add('is-playing');
+      video.play().catch(function(){});
+    });
+  });
   document.querySelectorAll('.copy-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
       var text = btn.getAttribute('data-copy');
