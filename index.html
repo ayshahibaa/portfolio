@@ -159,14 +159,14 @@
     position:relative; aspect-ratio:16/9; border:1px solid var(--line); border-radius:4px;
     overflow:hidden; background:var(--bg-raised); cursor:pointer; margin:4px 0 8px;
   }
-  .demo-poster, .demo-player video{width:100%; height:100%; object-fit:cover; display:block}
+  .demo-player video{width:100%; height:100%; object-fit:cover; display:block; background:var(--bg-raised)}
   .demo-play{
     position:absolute; inset:0; margin:auto; width:56px; height:56px; border-radius:50%;
     background:var(--accent); border:none; display:flex; align-items:center; justify-content:center;
     cursor:pointer; transition:transform .15s ease;
   }
   .demo-player:hover .demo-play{transform:scale(1.07)}
-  .demo-player.is-playing .demo-play, .demo-player.is-playing .demo-poster{display:none}
+  .demo-player.is-playing .demo-play{display:none}
   .demo-caption{font-family:"IBM Plex Mono", monospace; font-size:.72rem; color:var(--ink-soft); margin:0 0 18px}
 
   /* ---------- path (timeline) ---------- */
@@ -311,8 +311,10 @@
       <div class="label mono">INDEPENDENT PROJECT · RETRIEVAL-AUGMENTED GENERATION</div>
       <h3>Enterprise AI Knowledge Assistant</h3>
       <p class="desc">A retrieval system that answers questions on Dubai real estate legislation with article-level citations. Five statutory documents from the DLD and Dubai Legislation Portal are parsed, overlap-chunked and indexed, sitting behind a multi-provider LLM layer with automatic failover and retry-on-rate-limit, so generation never blocks on a single provider.</p>
-      <div class="demo-player" data-video="ai-assistant-demo.mp4">
-        <img class="demo-poster" src="ai-assistant-demo-poster.jpg" alt="Preview of the Dubai property law assistant answering a question">
+      <div class="demo-player">
+        <video class="demo-video" preload="metadata" muted playsinline aria-label="Preview of the Dubai property law assistant answering a question">
+          <source src="ai-assistant-demo.mp4" type="video/mp4">
+        </video>
         <button class="demo-play" aria-label="Play demo video" type="button">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M8 5v14l11-7L8 5z" fill="white"/></svg>
         </button>
@@ -527,12 +529,12 @@
   })();
 
   document.querySelectorAll('.demo-player').forEach(function(wrap){
+    var video = wrap.querySelector('.demo-video');
+    if (!video) return;
     wrap.addEventListener('click', function(){
       if (wrap.classList.contains('is-playing')) return;
-      var video = document.createElement('video');
-      video.src = wrap.getAttribute('data-video');
-      video.controls = true; video.autoplay = true; video.playsInline = true;
-      wrap.appendChild(video);
+      video.muted = false;
+      video.controls = true;
       wrap.classList.add('is-playing');
       video.play().catch(function(){});
     });
